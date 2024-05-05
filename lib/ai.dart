@@ -1,4 +1,9 @@
 
+import 'dart:convert';
+
+import 'package:flutter_application_1/weather.dart';
+import 'package:flutter_application_1/weather_service.dart';
+
 class AI {
   Future<List<Weather>> _fetchWeatherData(String city) async {
     final s = await WeatherService().getData(city);

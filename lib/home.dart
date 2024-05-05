@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/ai.dart';
 import 'package:intl/intl.dart';
 
 import 'message.dart';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,6 +16,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final List<Message> _messages = <Message>[];
   final _textController = TextEditingController();
+  final fsconnect = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -80,22 +84,30 @@ class _HomeState extends State<Home> {
         subtitle: Text(message.date, textAlign: TextAlign.right));
   }
 
-  void _senderMessage(String question) {
-    String answer = 'Ммм';
+  void _senderMessage(String question) async {
+    final DateTime questionTime = DateTime.now();
+    final String formattedQuestionDate =
+        DateFormat('yyyy-MM-dd – kk:mm:ss.SSS').format(questionTime);
+
     _textController.clear();
     setState(() {
-      _messages.insert(
-          0,
-          Message(
-              text: question,
-              isSend: true,
-              date: DateFormat('yyyy-MM-dd kk:mm').format(DateTime.now())));
-      _messages.insert(
-          0,
-          Message(
-              text: answer,
-              isSend: false,
-              date: DateFormat('yyyy-MM-dd kk:mm').format(DateTime.now())));
+      _messages.insert(0,
+          Message(text: question, isSend: true, date: formattedQuestionDate));
     });
+
+    final String answer = await AI().getAnswer(question);
+    final DateTime answerTime = DateTime.now();
+    final String formattedAnswerDate =
+        DateFormat('yyyy-MM-dd – kk:mm:ss.SSS').format(answerTime);
+
+    setState(() {
+      _messages.insert(
+          0, Message(text: answer, isSend: false, date: formattedAnswerDate));
+    });
+
+    var dialogue = fsconnect.collection('dialogue');
+    await dialogue
+        .add({'text': question, 'isSend': true, 'date': questionTime});
+    await dialogue.add({'text': answer, 'isSend': false, 'date': answerTime});
   }
 }

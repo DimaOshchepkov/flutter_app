@@ -1,5 +1,20 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.3.1'
+        classpath 'com.google.gms:google-services:4.3.10' // <-- Эта строка
+    }
+}
+
 plugins {
     id "com.android.application"
+    // START: FlutterFire Configuration
+    id 'com.google.gms.google-services'
+    // END: FlutterFire Configuration
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
 }
@@ -49,6 +64,9 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        defaultConfig {
+            multiDexEnabled true
+        }
     }
 
     buildTypes {
@@ -60,8 +78,13 @@ android {
     }
 }
 
+
+
 flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+  implementation 'com.android.support:multidex:2.0.1' //enter the latest multidex version
+
+}

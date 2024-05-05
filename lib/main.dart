@@ -1,7 +1,15 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'firebase_options.dart';
 import 'home.dart';
 
-void main() => runApp(MaterialApp(
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(MaterialApp(
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.greenAccent,
         cardColor: Colors.blueAccent,
@@ -9,3 +17,4 @@ void main() => runApp(MaterialApp(
       ),
       home: const Home(),
     ));
+}
